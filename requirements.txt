@@ -5,4 +5,4 @@ pyOpenSSL==24.1.0
 langdetect==1.0.9
 bs4==0.0.2
 tldextract==5.1.2
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
