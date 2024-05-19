@@ -1,8 +1,8 @@
-sqlachemy==2.0.30
-requestes==2.31.0
-python-whois==0.9.4
-pyOpenSLL==24.1.0
-langdetect==1.0.9
-bs4==0.0.2
-tldextract==5.1.2
-psycopg2==2.9.9
+sqlachemy
+requests
+python-whois
+pyOpenSLL
+langdetect
+bs4
+tldextract
+psycopg2
