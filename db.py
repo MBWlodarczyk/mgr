@@ -383,13 +383,15 @@ def ocr_from_url(url):
 
         # detect language of the text and pl prob
         language, pl_prob = detect_language_text(text)
+        if language == "pl" or pl_prob > 0:
+            image.save(Config.screenshots_path + uuid_text + ".png")
+        print(text,uuid_text,language,pl_prob)
+        return text,uuid_text,language,pl_prob
     except Exception as e:
         print(e)    
     image.save(Config.screenshots_path + uuid_text + ".png")
     # if pl or pl prob is higher than 0 save the screenshot
-    if language == "pl" or pl_prob > 0:
-        image.save(Config.screenshots_path + uuid_text + ".png")
-    print(text,uuid_text,language,pl_prob)
-    return text,uuid_text,language,pl_prob
 
 
+if __name__ == "__main__":
+    ocr_from_url("https://www.google.com")
