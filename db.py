@@ -378,6 +378,8 @@ def ocr_from_url(url):
 
         # Perform OCR on the image
         text = pytesseract.image_to_string(image)
+        # get rid of nul char in text
+        text = text.replace("\x00", "")
 
         # detect language of the text and pl prob
         language, pl_prob = detect_language_text(text)
