@@ -32,6 +32,9 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import uuid
 import Config
+import pyperclip
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
 
 logging.basicConfig(filename="scraper.log", level=logging.INFO)
@@ -42,6 +45,8 @@ class bad_urls(Base):
     __tablename__ = "bad_urls"
     id = Column(Integer, primary_key=True)
     Url = Column(String)
+    language = Column(String)
+    pl_prob = Column(Float)
 
 class Domain(Base):
     __tablename__ = "domains"
@@ -195,7 +200,7 @@ def save_url_lang_check(url):
     else:
         # save url to bad urls
         with Session() as session:
-            bad_url = bad_urls(Url=url)
+            bad_url = bad_urls(Url=url,language=language,pl_prob=pl_prob)
             session.add(bad_url)
             session.commit()
 
@@ -363,6 +368,8 @@ def ocr_from_url(url):
         total_width = driver.execute_script("return document.body.scrollWidth")
         total_height = driver.execute_script("return document.body.scrollHeight")
         driver.set_window_size(total_width, total_height)
+        text = driver.find_element(By.TAG_NAME, 'body').text
+
 
         # Take a screenshot of the webpage
         screenshot = driver.get_screenshot_as_png()
@@ -375,9 +382,8 @@ def ocr_from_url(url):
 
         # Open the screenshot image
         image = Image.open(BytesIO(screenshot))
+        print(text)
 
-        # Perform OCR on the image
-        text = pytesseract.image_to_string(image)
         # get rid of nul char in text
         text = text.replace("\x00", "")
 
