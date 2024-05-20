@@ -190,14 +190,14 @@ def save_url_lang_check(url):
     if pl_prob is None:
         return
     # if lanuage is pl or prob is higher than 0.5 save url
-    if language == "pl" or pl_prob > 0:
+    if language == "pl" or  (type(pl_prob)==int and pl_prob > 0):
         save_url(url)
     else:
         # save url to bad urls
-        session = Session()
-        bad_url = bad_urls(Url=url)
-        session.add(bad_url)
-        session.commit()
+        with Session() as session:
+            bad_url = bad_urls(Url=url)
+            session.add(bad_url)
+            session.commit()
 
 def save_url(url):
     # check if url is already in the database
@@ -383,7 +383,7 @@ def ocr_from_url(url):
 
         # detect language of the text and pl prob
         language, pl_prob = detect_language_text(text)
-        if language == "pl" or pl_prob > 0:
+        if language == "pl" or (type(pl_prob)==int and pl_prob > 0):
             image.save(Config.screenshots_path + uuid_text + ".png")
         print(text,uuid_text,language,pl_prob)
         return text,uuid_text,language,pl_prob
