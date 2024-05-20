@@ -4,9 +4,6 @@ import Config
 import logging
 import datetime
 
-#multi-threading
-import threading
-from queue import Queue
 from concurrent.futures import ThreadPoolExecutor
 
 # configure logger to file

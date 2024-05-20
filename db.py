@@ -195,6 +195,7 @@ def save_url_lang_check(url):
         return
     if pl_prob is None:
         return
+
     # if lanuage is pl or prob is higher than 0.5 save url
     if language == "pl" or  (type(pl_prob)==int and pl_prob > 0):
         save_url(url)
@@ -306,7 +307,7 @@ def get_certificate(domain):
 def detect_language(url):
     try:
         # Fetch the web page content
-        response = requests.get(url, verify=False)
+        response = requests.get(url, verify=False)pyth
         response.raise_for_status()  # Raise an exception for non-200 status codes
         # parse text so that it can be detected and not the html tags using beautify soup
         # extract text from html
@@ -357,34 +358,30 @@ def get_whois_info(domain):
 
 def ocr_from_url(url):
     try:
-        with chrome_driver_semaphore:
-            # Set up Selenium and open the webpage
-            options = webdriver.ChromeOptions()
-            options.add_argument("--headless")
-            service = Service(ChromeDriverManager().install())
-            driver = webdriver.Chrome(service=service, options=options)
-            driver.get(url)
-
-            # Give the page some time to load
-            time.sleep(2)
-            total_width = driver.execute_script("return document.body.scrollWidth")
-            total_height = driver.execute_script("return document.body.scrollHeight")
-            driver.set_window_size(total_width, total_height)
-            text = driver.find_element(By.TAG_NAME, 'body').text
-
-
-            # Take a screenshot of the webpage
-            screenshot = driver.get_screenshot_as_png()
-
-            #generate uuid for the screenshot
-            uuid_text = uuid.uuid4().hex
-
-            # Close the browser
-            driver.quit()
+        chrome_driver_semaphore.acquire()
+        # Set up Selenium and open the webpage
+        options = webdriver.ChromeOptions()
+        options.add_argument("--headless")
+        service = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
+        driver.get(url)
+        # Give the page some time to load
+        time.sleep(2)
+        total_width = driver.execute_script("return document.body.scrollWidth")
+        total_height = driver.execute_script("return document.body.scrollHeight")
+        driver.set_window_size(total_width, total_height)
+        text = driver.find_element(By.TAG_NAME, 'body').text
+        # Take a screenshot of the webpage
+        screenshot = driver.get_screenshot_as_png()
+        #generate uuid for the screenshot
+        uuid_text = uuid.uuid4().hex
+        # Close the browser
+        driver.quit()
 
         # Open the screenshot image
         image = Image.open(BytesIO(screenshot))
         print(text)
+        chrome_driver_semaphore.release()
 
         # get rid of nul char in text
         text = text.replace("\x00", "")
@@ -396,7 +393,8 @@ def ocr_from_url(url):
         print(text,uuid_text,language,pl_prob)
         return text,uuid_text,language,pl_prob
     except Exception as e:
-        print(e)    
+        print(e)
+        chrome_driver_semaphore.release()    
     # if pl or pl prob is higher than 0 save the screenshot
 
 
