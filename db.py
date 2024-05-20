@@ -307,7 +307,7 @@ def get_certificate(domain):
 def detect_language(url):
     try:
         # Fetch the web page content
-        response = requests.get(url, verify=False)pyth
+        response = requests.get(url, verify=False)
         response.raise_for_status()  # Raise an exception for non-200 status codes
         # parse text so that it can be detected and not the html tags using beautify soup
         # extract text from html
