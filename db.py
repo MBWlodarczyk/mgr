@@ -98,13 +98,13 @@ engine = create_engine(
     "postgresql://yourusername:yourpassword@192.168.50.172:5432/yourdatabase"
 )
 # drop the db
-Base.metadata.drop_all(engine)
-try:
-    Base.metadata.create_all(engine)
-except Exception as e:
-    print(e)
-    logging.error(e, exc_info=True)
-    raise
+#Base.metadata.drop_all(engine)
+#try:
+#    Base.metadata.create_all(engine)
+#except Exception as e:
+#    print(e)
+#    logging.error(e, exc_info=True)
+ #   raise
 Session = sessionmaker(bind=engine)
 
 chrome_driver_semaphore = threading.Semaphore(5)
