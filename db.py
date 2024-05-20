@@ -389,7 +389,6 @@ def ocr_from_url(url):
         return text,uuid_text,language,pl_prob
     except Exception as e:
         print(e)    
-    image.save(Config.screenshots_path + uuid_text + ".png")
     # if pl or pl prob is higher than 0 save the screenshot
 
 
