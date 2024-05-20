@@ -35,7 +35,7 @@ import Config
 import pyperclip
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-
+import threading
 
 logging.basicConfig(filename="scraper.log", level=logging.INFO)
 
@@ -107,6 +107,7 @@ except Exception as e:
     raise
 Session = sessionmaker(bind=engine)
 
+chrome_driver_semaphore = threading.Semaphore(5)
 
 def save_domain(domain):
     # check if domain is already in the database
@@ -356,29 +357,30 @@ def get_whois_info(domain):
 
 def ocr_from_url(url):
     try:
-        # Set up Selenium and open the webpage
-        options = webdriver.ChromeOptions()
-        options.add_argument("--headless")
-        service = Service(ChromeDriverManager().install())
-        driver = webdriver.Chrome(service=service, options=options)
-        driver.get(url)
+        with chrome_driver_semaphore:
+            # Set up Selenium and open the webpage
+            options = webdriver.ChromeOptions()
+            options.add_argument("--headless")
+            service = Service(ChromeDriverManager().install())
+            driver = webdriver.Chrome(service=service, options=options)
+            driver.get(url)
 
-        # Give the page some time to load
-        time.sleep(2)
-        total_width = driver.execute_script("return document.body.scrollWidth")
-        total_height = driver.execute_script("return document.body.scrollHeight")
-        driver.set_window_size(total_width, total_height)
-        text = driver.find_element(By.TAG_NAME, 'body').text
+            # Give the page some time to load
+            time.sleep(2)
+            total_width = driver.execute_script("return document.body.scrollWidth")
+            total_height = driver.execute_script("return document.body.scrollHeight")
+            driver.set_window_size(total_width, total_height)
+            text = driver.find_element(By.TAG_NAME, 'body').text
 
 
-        # Take a screenshot of the webpage
-        screenshot = driver.get_screenshot_as_png()
+            # Take a screenshot of the webpage
+            screenshot = driver.get_screenshot_as_png()
 
-        #generate uuid for the screenshot
-        uuid_text = uuid.uuid4().hex
+            #generate uuid for the screenshot
+            uuid_text = uuid.uuid4().hex
 
-        # Close the browser
-        driver.quit()
+            # Close the browser
+            driver.quit()
 
         # Open the screenshot image
         image = Image.open(BytesIO(screenshot))
@@ -398,5 +400,3 @@ def ocr_from_url(url):
     # if pl or pl prob is higher than 0 save the screenshot
 
 
-if __name__ == "__main__":
-    ocr_from_url("https://www.google.com")
